@@ -33,13 +33,12 @@ for i in range(len(jobs)):
 
 for i in range(len(jobs)):
         job = profitNJobs[i]
-        #check if slot is occupied
-        for j in range(job[2], 0, -1):
+        for j in range(job[2], 0, -1):      #check if slot is occupied
             if slot[j] == 0:
                 ans[j] = job[1]
                 profit += job[0]
                 slot[j] = 1
                 break
         
-print("Jobs scheduled buddy:",ans[1:])
+print("Maximum profit sequence of jobs => ",ans[1:])
 print("Profit => ",profit)
