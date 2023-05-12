@@ -1,0 +1,80 @@
+<apex:page docType="html-5.0" controller="calculatorController">
+    <apex:form >
+        <br/> <br/>
+        Calculator for Basic Mathematical Operations
+        <br/> <br/>
+        Enter Number 1:
+        <apex:input type="number" value="{!op1}"/>
+        <br/> <br/>
+        <apex:selectList value="{!op}">
+            <apex:selectOptions value="{!operators}"/>
+        </apex:selectList>
+        <br/> <br/>
+        Enter Number 2:
+        <apex:input type="number" value="{!op2}"/>
+        <br/> <br/>
+        <apex:commandButton action="{!calculate}" value="Calculate Result"/>
+        <br/>
+        <br/> Result = <apex:outputText >{!result}</apex:outputText> <br/>
+        <apex:pageMessages />
+    </apex:form>
+</apex:page>
+
+public class calculatorController 
+{
+    interface operation 
+    {
+        decimal execute(decimal op1, decimal op2);
+    }
+    class Add implements operation 
+    {
+        public decimal execute(decimal op1, decimal op2) { return op1 + op2; }
+    }
+    class Subtract implements operation 
+    {
+        public decimal execute(decimal op1, decimal op2) { return op1 - op2; }
+    }
+    class Multiply implements operation 
+    {
+        public decimal execute(decimal op1, decimal op2) { return op1 * op2; }
+    }
+    class Divide implements operation 
+    {
+        public decimal execute(decimal op1, decimal op2) { return op1 / op2; }
+    }
+    public selectoption[] getoperators() 
+    {
+        return new SelectOption[] 
+        {
+            new SelectOption('add', '+'),
+            new SelectOption('sub', '-'),
+            new SelectOption('mul', '*'),
+            new SelectOption('div', '/')
+        };
+    }
+    public decimal op1 { get; set; }
+    public decimal op2 { get; set; }
+    public string op { get; set; }
+    public decimal result { get; set; }
+
+    public void calculate() 
+    {
+        map<string, type> ops = new map<string, type> 
+        {
+            'add' => add.class,
+            'sub' => subtract.class,
+            'mul' => multiply.class,
+            'div' => divide.class
+        };
+        try 
+        {
+            operation o = (operation)ops.get(op).newinstance();
+            result = o.execute(op1, op2);
+        } 
+        catch(exception e) 
+        {
+            result = null;
+            apexpages.addmessages(e);
+        }
+    }
+}
